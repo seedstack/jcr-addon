@@ -15,50 +15,59 @@ import java.util.Properties;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang.StringUtils;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
 
 @Config("jcr")
 public class JcrConfig {
 
-    private String defaultRepository = "default";
+    private String defaultSession = "default";
 
-    private Map<String, RepositoryConfig> repositories = new HashMap<>();
+    private Map<String, SessionConfig> sessions = new HashMap<>();
 
-    public JcrConfig addRepository(String key, RepositoryConfig repositoryConfig) {
-        repositories.put(key, repositoryConfig);
+    public JcrConfig addSession(String key, SessionConfig sessionConfig) {
+        sessions.put(key, sessionConfig);
         return this;
     }
 
-    public String getDefaultRepository() {
-        return defaultRepository;
+    public String getDefaultSession() {
+        return defaultSession;
     }
 
-    public Map<String, RepositoryConfig> getRepositories() {
-        return Collections.unmodifiableMap(repositories);
+    public Map<String, SessionConfig> getSessions() {
+        return Collections.unmodifiableMap(sessions);
     }
 
-    public void setDefaultRepository(String defaultRepository) {
-        this.defaultRepository = defaultRepository;
+    public void setDefaultsession(String defaultsession) {
+        this.defaultSession = defaultsession;
     }
 
     public enum RepositoryAddressType {
         JNDI_NAME, JNDI_URI, LOCAL_PATH, REMOTE_URI
     }
 
-    public static class RepositoryConfig {
+    public static class SessionConfig {
 
         private String username;
         private String password;
 
-        private String repository;
+        private String repository = "default";
 
         @SingleValue
         @NotNull
         private RepositoryAddressType type;
+        @NotNull
         private String address;
 
         private Properties vendorProperties;
+
+        @Override
+        public String toString() {
+            return "SessionConfig [username=" + username + ", repository=" + repository + ", type="
+                    + type + ", address=" + address + ", vendorProperties=" + vendorProperties
+                    + "]";
+        }
 
         public String getAddress() {
             return address;
@@ -73,7 +82,8 @@ public class JcrConfig {
         }
 
         public boolean hasAuthenticationInfo() {
-            return !(this.username.isEmpty() && this.password.isEmpty());
+
+            return !(StringUtils.isBlank(username) || StringUtils.isBlank(password));
         }
 
         public RepositoryAddressType getType() {
@@ -88,37 +98,35 @@ public class JcrConfig {
             return vendorProperties;
         }
 
-        public RepositoryConfig setAddress(String address) {
+        public SessionConfig setAddress(String address) {
             this.address = address;
             return this;
         }
 
-        public RepositoryConfig setPassword(String password) {
+        public SessionConfig setPassword(String password) {
             this.password = password;
             return this;
         }
 
-        public RepositoryConfig setRepository(String repository) {
+        public SessionConfig setRepository(String repository) {
             this.repository = repository;
             return this;
         }
 
-        public RepositoryConfig setType(RepositoryAddressType type) {
+        public SessionConfig setType(RepositoryAddressType type) {
             this.type = type;
             return this;
         }
 
-        public RepositoryConfig setUsername(String username) {
+        public SessionConfig setUsername(String username) {
             this.username = username;
             return this;
         }
 
-        public RepositoryConfig setVendorProperties(Properties vendorProperties) {
+        public SessionConfig setVendorProperties(Properties vendorProperties) {
             this.vendorProperties = vendorProperties;
             return this;
 
         }
-
     }
-
 }

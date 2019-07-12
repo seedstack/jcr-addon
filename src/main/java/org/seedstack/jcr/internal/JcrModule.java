@@ -7,95 +7,78 @@
  */
 package org.seedstack.jcr.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map.Entry;
+
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.seedstack.jcr.JcrConfig;
+import org.seedstack.jcr.JcrConfig.SessionConfig;
+import org.seedstack.jcr.spi.JcrSessionFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
-import com.google.inject.util.Providers;
-
-import org.seedstack.jcr.spi.ConnectionDefinition;
-import org.seedstack.jcr.spi.JcrExceptionHandler;
-import org.seedstack.jcr.spi.JmsFactory;
-import org.seedstack.jcr.spi.MessageListenerDefinition;
-import org.seedstack.jcr.spi.MessageListenerInstanceDefinition;
-import org.seedstack.jcr.spi.MessagePoller;
-import org.seedstack.seed.core.internal.transaction.TransactionalProxy;
-
-import javax.jms.Connection;
-import javax.jms.ExceptionListener;
-import javax.jms.MessageListener;
-import javax.jms.Session;
-import java.util.Collection;
-import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 class JcrModule extends AbstractModule {
-    private final JmsFactory jmsFactory;
-    private final Map<String, Connection> connections;
-    private final Map<String, MessageListenerDefinition> messageListenerDefinitions;
-    private final Map<String, ConnectionDefinition> connectionDefinitions;
-    private final Collection<MessagePoller> pollers;
+    private final JcrConfig jcrConfig;
+    private final Collection<Class<?>> factories;
 
-    public JcrModule() {
-        //TODO: Stuff
+    private static final Logger LOGGER = LoggerFactory.getLogger(JcrModule.class);
+
+    JcrModule(Collection<Class<?>> factories, JcrConfig jcrConfig) {
+        this.factories = factories;
+        this.jcrConfig = jcrConfig;
     }
 
     @Override
     protected void configure() {
-        requestStaticInjection(ExceptionListenerAdapter.class);
-        requestStaticInjection(MessageListenerAdapter.class);
-
-        bind(JmsFactory.class).toInstance(jmsFactory);
-        requestInjection(jmsFactory);
-
-        JmsSessionLink jmsSessionLink = new JmsSessionLink();
-        bind(Session.class).toInstance(TransactionalProxy.create(Session.class, jmsSessionLink));
-
-        for (Map.Entry<String, Connection> entry : connections.entrySet()) {
-            bindConnection(connectionDefinitions.get(entry.getKey()), entry.getValue(), jmsSessionLink);
+        List<JcrSessionFactory> factoryInstances = new ArrayList<>();
+        for (Class<?> factory : factories) {
+            try {
+                factoryInstances.add(factory.asSubclass(JcrSessionFactory.class).newInstance());
+            } catch (InstantiationException | IllegalAccessException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         }
 
-        for (Map.Entry<String, MessageListenerDefinition> entry : messageListenerDefinitions.entrySet()) {
-            bindMessageListener(entry.getValue());
-        }
+        try {
+            for (Entry<String, SessionConfig> kvp : jcrConfig.getSessions().entrySet()) {
+                Session session = buildSession(kvp.getValue(), factoryInstances);
+                if (session == null) {
+                    // TODO: Throw Exception
+                    throw new RuntimeException(String.format("Could not retrieve a session for %s",
+                            kvp.getValue().toString()));
+                }
+                LOGGER.info("Binding Jcr Session with key {}", kvp.getKey());
+                bind(Session.class).annotatedWith(Names.named(kvp.getKey()))
+                        .toInstance(session);
 
-        for (MessagePoller poller : pollers) {
-            requestInjection(poller);
-        }
-    }
-
-    private void bindMessageListener(MessageListenerDefinition messageListenerDefinition) {
-        String name = messageListenerDefinition.getName();
-
-        bind(JmsListenerTransactionHandler.class)
-                .annotatedWith(Names.named(name))
-                .toInstance(new JmsListenerTransactionHandler(messageListenerDefinition.getSession()));
-
-        if (messageListenerDefinition instanceof MessageListenerInstanceDefinition) {
-            MessageListener messageListener = ((MessageListenerInstanceDefinition) messageListenerDefinition).getMessageListener();
-            bind(MessageListener.class).annotatedWith(Names.named(name)).toInstance(messageListener);
-        } else {
-            bind(MessageListener.class).annotatedWith(Names.named(name)).to(messageListenerDefinition.getMessageListenerClass());
+                if (jcrConfig.getDefaultSession().equals(kvp.getKey())) {
+                    bind(Session.class).toInstance(session);
+                }
+            }
+        } catch (RepositoryException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
-
-    private void bindConnection(ConnectionDefinition connectionDefinition, Connection connection, JmsSessionLink jmsSessionLink) {
-        String name = connectionDefinition.getName();
-
-        Class<? extends JcrExceptionHandler> jmsExceptionHandlerClass = connectionDefinition.getJmsExceptionHandlerClass();
-        if (jmsExceptionHandlerClass != null) {
-            bind(JcrExceptionHandler.class).annotatedWith(Names.named(name)).to(jmsExceptionHandlerClass);
-        } else {
-            bind(JcrExceptionHandler.class).annotatedWith(Names.named(name)).toProvider(Providers.of(null));
+    private static Session buildSession(SessionConfig config, List<JcrSessionFactory> factories)
+            throws RepositoryException {
+        LOGGER.info("Building {} with these factories {}", config, factories);
+        for (JcrSessionFactory factory : factories) {
+            Session session = factory.createSession(config);
+            if (session != null) {
+                return session;
+            }
         }
-
-        if (connectionDefinition.getExceptionListenerClass() != null) {
-            bind(ExceptionListener.class).annotatedWith(Names.named(name)).to(connectionDefinition.getExceptionListenerClass());
-        }
-
-        bind(Connection.class).annotatedWith(Names.named(name)).toInstance(connection);
-
-        JmsTransactionHandler transactionHandler = new JmsTransactionHandler(jmsSessionLink, connection);
-        bind(JmsTransactionHandler.class).annotatedWith(Names.named(name)).toInstance(transactionHandler);
+        return null;
     }
+
 }
