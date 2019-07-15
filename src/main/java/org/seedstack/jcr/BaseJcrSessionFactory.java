@@ -33,6 +33,7 @@ public abstract class BaseJcrSessionFactory implements JcrSessionFactory {
     public Session createSession(SessionConfig configuration) throws RepositoryException {
 
         Map<String, String> repositoryParameters = this.translateConfiguration(configuration);
+        repositoryParameters = this.appendVendorProperties(configuration, repositoryParameters);
 
         // Loop over every factory impl and look for one that accepts our parameters
         for (RepositoryFactory factory : factories) {
@@ -52,11 +53,14 @@ public abstract class BaseJcrSessionFactory implements JcrSessionFactory {
             Map<String, String> parsedConfig) {
 
         Map<String, String> transaltedConfig = new HashMap<>();
-        for (Entry<Object, Object> property : config.getVendorProperties().entrySet()) {
-            transaltedConfig.put(property.getKey().toString(), property.getValue().toString());
+        transaltedConfig.putAll(parsedConfig);
+
+        if (config.getVendorProperties() != null) {
+            for (Entry<Object, Object> property : config.getVendorProperties().entrySet()) {
+                transaltedConfig.put(property.getKey().toString(), property.getValue().toString());
+            }
         }
 
-        transaltedConfig.putAll(parsedConfig);
         return transaltedConfig;
 
     }

@@ -13,6 +13,10 @@ jcr:
     default:
       type: LOCAL_PATH
       address: /temp/jcr1
+      username: admin
+      password: admin
     alternative:
       type: LOCAL_PATH
       address: /temp/jcr2
+      vendorProperties:
+        prop1: value

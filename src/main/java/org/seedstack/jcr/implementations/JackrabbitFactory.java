@@ -13,9 +13,12 @@ package org.seedstack.jcr.implementations;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Priority;
+
 import org.seedstack.jcr.BaseJcrSessionFactory;
 import org.seedstack.jcr.JcrConfig.SessionConfig;
 
+@Priority(100)
 public class JackrabbitFactory extends BaseJcrSessionFactory {
     private static final String REPOSITORY_HOME = "org.apache.jackrabbit.repository.home";
     private static final String REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
