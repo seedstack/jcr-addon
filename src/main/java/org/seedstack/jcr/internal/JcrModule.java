@@ -58,7 +58,7 @@ class JcrModule extends AbstractModule {
                     throw new RepositoryException(String.format("Could not create session %s",
                             kvp.getValue().getRepository()));
                 }
-                LOGGER.info("Binding Jcr Session with key {}", kvp.getKey());
+                LOGGER.debug("Binding Jcr Session with key {}", kvp.getKey());
                 bind(Session.class).annotatedWith(Names.named(kvp.getKey()))
                         .toInstance(session);
 
@@ -73,7 +73,7 @@ class JcrModule extends AbstractModule {
 
     private static Session buildSession(SessionConfig config, List<JcrSessionFactory> factories)
             throws RepositoryException {
-        LOGGER.info("Building {} with these factories {}", config, factories);
+        LOGGER.debug("Building {} with these factories {}", config, factories);
         for (JcrSessionFactory factory : factories) {
             Session session = factory.createSession(config);
             if (session != null) {
