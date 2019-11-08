@@ -1,0 +1,86 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.seedstack.addons.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>jcr-core</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.seedstack.addons.jcr</groupId>
+            <artifactId>jcr-specs</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-core</artifactId>
+            <version>${seed.version}</version>
+        </dependency>
+
+
+        <!-- Javax Specifications -->
+        <dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>javax.transaction-api</artifactId>
+            <version>${jta.version}</version>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.jcr</groupId>
+            <artifactId>jcr</artifactId>
+            <version>${javax.jcr.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+
+
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>jackrabbit-core</artifactId>
+            <version>2.19.3</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+
+        <!-- TEST Dependencies -->
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-testing-core</artifactId>
+            <version>${seed.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.seedstack.seed</groupId>
+            <artifactId>seed-testing-junit4</artifactId>
+            <version>${seed.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+</project>

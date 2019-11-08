@@ -47,7 +47,7 @@ public class SimpleDataRetrievalIT {
         Assertions.assertThat(
                 defaultSession.getRootNode().getNode("test/").getProperty("prop").getString())
                 .isEqualTo("jcr-test");
-        
+
         defaultSession.save();
     }
 

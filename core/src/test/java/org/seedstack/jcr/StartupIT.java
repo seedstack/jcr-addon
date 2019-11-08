@@ -20,7 +20,7 @@ public class StartupIT {
     @Test
     public void testPluginInitialization() throws Exception {
 
-        // Stack Initialziation test
+        // Stack Initialization test
     }
 
 }

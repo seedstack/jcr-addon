@@ -41,7 +41,7 @@ class JcrModule extends AbstractModule {
         List<JcrSessionFactory> factoryInstances = new ArrayList<>();
 
         PriorityUtils.sortByPriority(factories);
-
+        
         for (Class<?> factory : factories) {
             try {
                 factoryInstances.add(factory.asSubclass(JcrSessionFactory.class).newInstance());
@@ -55,12 +55,12 @@ class JcrModule extends AbstractModule {
             for (Entry<String, SessionConfig> kvp : jcrConfig.getSessions().entrySet()) {
                 Session session = buildSession(kvp.getValue(), factoryInstances);
                 if (session == null) {
-                    throw new RepositoryException(String.format("Could not create session %s",
-                            kvp.getValue().getRepository()));
+                    throw new RepositoryException(
+                            String.format("Could not create session %s",
+                                    kvp.getValue().getRepository()));
                 }
                 LOGGER.debug("Binding Jcr Session with key {}", kvp.getKey());
-                bind(Session.class).annotatedWith(Names.named(kvp.getKey()))
-                        .toInstance(session);
+                bind(Session.class).annotatedWith(Names.named(kvp.getKey())).toInstance(session);
 
                 if (jcrConfig.getDefaultSession().equals(kvp.getKey())) {
                     bind(Session.class).toInstance(session);
@@ -82,5 +82,4 @@ class JcrModule extends AbstractModule {
         }
         return null;
     }
-
 }
