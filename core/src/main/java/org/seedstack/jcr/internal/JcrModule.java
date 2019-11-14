@@ -1,85 +1,69 @@
-/*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
- *
- * This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/.
- */
 package org.seedstack.jcr.internal;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
-import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.seedstack.jcr.JcrConfig;
-import org.seedstack.jcr.JcrConfig.SessionConfig;
-import org.seedstack.jcr.spi.JcrSessionFactory;
-import org.seedstack.seed.SeedException;
+import org.seedstack.jcr.JcrConfig.RepositoryConfig;
+import org.seedstack.jcr.spi.JcrExceptionHandler;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
+import org.seedstack.seed.core.internal.transaction.TransactionalProxy;
 import org.seedstack.shed.misc.PriorityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.inject.AbstractModule;
+import com.google.inject.PrivateModule;
 import com.google.inject.name.Names;
+import com.google.inject.util.Providers;
 
-class JcrModule extends AbstractModule {
-    private final JcrConfig jcrConfig;
-    private final List<Class<?>> factories;
-
+class JcrModule extends PrivateModule {
     private static final Logger LOGGER = LoggerFactory.getLogger(JcrModule.class);
 
-    JcrModule(List<Class<?>> factories, JcrConfig jcrConfig) {
+    private final JcrConfig configuration;
+    private final List<Class<? extends JcrRepositoryFactory>> factories;
+
+    JcrModule(List<Class<? extends JcrRepositoryFactory>> factories,
+            JcrConfig jcrConfig) {
         this.factories = factories;
-        this.jcrConfig = jcrConfig;
+        this.configuration = jcrConfig;
     }
 
     @Override
     protected void configure() {
-        List<JcrSessionFactory> factoryInstances = new ArrayList<>();
-
         PriorityUtils.sortByPriority(factories);
-        
-        for (Class<?> factory : factories) {
-            try {
-                factoryInstances.add(factory.asSubclass(JcrSessionFactory.class).newInstance());
-            } catch (Exception e) {
-                throw SeedException.wrap(e, JcrErrorCode.CANNOT_INITIALIZE_FACTORY)
-                        .put("factoryClass", factory.getClass().getName());
-            }
-        }
+        JcrTransactionLink transactionalLink = new JcrTransactionLink();
+        bind(Session.class).toInstance(TransactionalProxy.create(Session.class, transactionalLink));
+        expose(Session.class);
+        configuration.getRepositories()
+                .forEach((key, value) -> bindConfiguration(key, value, transactionalLink));
 
-        try {
-            for (Entry<String, SessionConfig> kvp : jcrConfig.getSessions().entrySet()) {
-                Session session = buildSession(kvp.getValue(), factoryInstances);
-                if (session == null) {
-                    throw new RepositoryException(
-                            String.format("Could not create session %s",
-                                    kvp.getValue().getRepository()));
-                }
-                LOGGER.debug("Binding Jcr Session with key {}", kvp.getKey());
-                bind(Session.class).annotatedWith(Names.named(kvp.getKey())).toInstance(session);
-
-                if (jcrConfig.getDefaultSession().equals(kvp.getKey())) {
-                    bind(Session.class).toInstance(session);
-                }
-            }
-        } catch (RepositoryException e) {
-            throw SeedException.wrap(e, JcrErrorCode.CANNOT_CREATE_SESSION);
-        }
     }
 
-    private static Session buildSession(SessionConfig config, List<JcrSessionFactory> factories)
-            throws RepositoryException {
-        LOGGER.debug("Building {} with these factories {}", config, factories);
-        for (JcrSessionFactory factory : factories) {
-            Session session = factory.createSession(config);
-            if (session != null) {
-                return session;
-            }
+    private void bindConfiguration(String name, RepositoryConfig configuration,
+            JcrTransactionLink transactionalLink) {
+
+        LOGGER.debug("Binding repository: {}", name);
+        LOGGER.trace("Configuration {}", configuration);
+
+        Class<? extends JcrExceptionHandler> configExceptionHandler = configuration
+                .getExceptionHandler();
+
+        if (configExceptionHandler != null) {
+            bind(JcrExceptionHandler.class).annotatedWith(Names.named(name))
+                    .to(configExceptionHandler);
+        } else {
+            bind(JcrExceptionHandler.class).annotatedWith(Names.named(name))
+                    .toProvider(Providers.of(null));
         }
-        return null;
+        expose(JcrExceptionHandler.class).annotatedWith(Names.named(name));
+
+        JcrTransactionHandler transactionHandler = new JcrTransactionHandler(transactionalLink,
+                factories, configuration);
+        bind(JcrTransactionHandler.class).annotatedWith(Names.named(name))
+                .toInstance(transactionHandler);
+        expose(JcrTransactionHandler.class).annotatedWith(Names.named(name));
+
     }
+
 }

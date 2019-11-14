@@ -6,11 +6,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 #
 
-logging: INFO
+logging: 
+  level: INFO
+  loggers:
+    org.seedstack.jcr: TRACE
+    
 jcr:
-  defaultRepository: default
-  sessions:
-    default:
+  defaultRepository: repo1
+  repositories:
+    repo1:
       type: LOCAL_PATH
       address: ./target/test/repositories/jcr1
       username: admin

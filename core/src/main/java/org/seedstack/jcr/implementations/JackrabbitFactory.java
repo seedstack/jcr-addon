@@ -16,7 +16,7 @@ import java.util.Map;
 import javax.annotation.Priority;
 
 import org.seedstack.jcr.BaseJcrSessionFactory;
-import org.seedstack.jcr.JcrConfig.SessionConfig;
+import org.seedstack.jcr.JcrConfig.RepositoryConfig;
 
 @Priority(100)
 public class JackrabbitFactory extends BaseJcrSessionFactory {
@@ -25,7 +25,7 @@ public class JackrabbitFactory extends BaseJcrSessionFactory {
     private static final String JNDI_NAME = "org.apache.jackrabbit.repository.jndi.name";
 
     @Override
-    public Map<String, String> translateConfiguration(SessionConfig config) {
+    public Map<String, String> translateConfiguration(RepositoryConfig config) {
         Map<String, String> translated = new HashMap<>();
 
         switch (config.getType()) {

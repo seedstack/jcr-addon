@@ -13,13 +13,13 @@ package org.seedstack.jcr.internal;
 import java.lang.reflect.Modifier;
 
 import org.kametic.specifications.AbstractSpecification;
-import org.seedstack.jcr.spi.JcrSessionFactory;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
 import org.seedstack.shed.reflect.ClassPredicates;
 
-public class SessionFactorySpecification extends AbstractSpecification<Class<?>> {
-    public static final SessionFactorySpecification INSTANCE = new SessionFactorySpecification();
+public class RepositoryFactorySpecification extends AbstractSpecification<Class<?>> {
+    public static final RepositoryFactorySpecification INSTANCE = new RepositoryFactorySpecification();
 
-    private SessionFactorySpecification() {
+    private RepositoryFactorySpecification() {
         // cannot be instancied
     }
 
@@ -27,7 +27,7 @@ public class SessionFactorySpecification extends AbstractSpecification<Class<?>>
     public boolean isSatisfiedBy(Class<?> candidate) {
         return ClassPredicates
                 .classModifierIs(Modifier.ABSTRACT).negate()
-                .and(ClassPredicates.classImplements(JcrSessionFactory.class))
+                .and(ClassPredicates.classImplements(JcrRepositoryFactory.class))
                 .test(candidate);
 
     }

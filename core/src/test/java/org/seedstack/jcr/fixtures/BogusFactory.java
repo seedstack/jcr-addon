@@ -17,39 +17,31 @@ import javax.annotation.Priority;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.seedstack.jcr.JcrConfig.SessionConfig;
-import org.seedstack.jcr.spi.JcrSessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.seedstack.jcr.JcrConfig.RepositoryConfig;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
 @Priority(1000)
-public class BogusFactory implements JcrSessionFactory {
+public class BogusFactory implements JcrRepositoryFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(BogusFactory.class);
+    private static int callCount = 0;
 
-    private static CreationBehaviour behaviour = CreationBehaviour.NULL;
-
-    public enum CreationBehaviour {
-        CRASH, NULL
+    public static void resetCallCount() {
+        callCount = 0;
     }
 
-    public static void setCreationBehaviour(CreationBehaviour behaviour) {
-        BogusFactory.behaviour = behaviour;
-    }
-
-    @Override
-    public Session createSession(SessionConfig configuration) throws RepositoryException {
-
-        LOGGER.info("Call to bogus factory with behaviour: {}", behaviour);
-        if (behaviour == CreationBehaviour.CRASH) {
-            throw new BoggusException();
-        }
-        return null;
-
+    public static int getCallCount() {
+        return callCount;
     }
 
     @Override
-    public Map<String, String> translateConfiguration(SessionConfig config) {
+    public synchronized Session createSession(RepositoryConfig configuration)
+            throws RepositoryException {
+        callCount += 1;
+        throw new BoggusException();
+    }
+
+    @Override
+    public Map<String, String> translateConfiguration(RepositoryConfig config) {
         return Collections.emptyMap();
     }
 

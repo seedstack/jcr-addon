@@ -7,22 +7,37 @@
  */
 package org.seedstack.jcr;
 
+import javax.jcr.Session;
+import javax.transaction.Transactional;
+
 import org.assertj.core.api.Assertions;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.jcr.fixtures.BoggusException;
-import org.seedstack.jcr.fixtures.BogusITLauncher;
-import org.seedstack.seed.testing.LaunchWith;
+import org.seedstack.jcr.fixtures.BogusFactory;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 
+import com.google.inject.Inject;
+
 @RunWith(SeedITRunner.class)
-@LaunchWith(value = BogusITLauncher.class)
 public class BogusFactoryIT {
 
+    // Required to perform transaction initialziation mechanisms
+    @SuppressWarnings("unused")
+    @Inject
+    private Session defaultSession;
+
+    @Before
+    public void setUp() {
+        BogusFactory.resetCallCount();
+    }
+
     @Test
+    @Jcr
+    @Transactional
     public void testFailure() throws Exception {
-        Assertions.assertThat(BogusITLauncher.getExceptionMessage())
-                .contains(BoggusException.class.getName());
+        Assertions.assertThat(BogusFactory.getCallCount()).isEqualTo(1);
+
     }
 
 }

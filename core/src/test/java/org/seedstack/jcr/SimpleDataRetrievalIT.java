@@ -5,15 +5,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
 package org.seedstack.jcr;
 
-import javax.inject.Named;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Session;
+import javax.transaction.Transactional;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -29,7 +26,6 @@ public class SimpleDataRetrievalIT {
     private Session defaultSession;
 
     @Inject
-    @Named("alternative")
     private Session alternativeSession;
 
     @Test
@@ -39,6 +35,8 @@ public class SimpleDataRetrievalIT {
     }
 
     @Test
+    @Transactional
+    @Jcr
     public void testNodeModification() throws Exception {
 
         Node newNode = defaultSession.getRootNode().addNode("test");
@@ -60,7 +58,5 @@ public class SimpleDataRetrievalIT {
         }
 
         defaultSession.save();
-
     }
-
 }

@@ -21,16 +21,16 @@ import javax.jcr.RepositoryFactory;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
-import org.seedstack.jcr.JcrConfig.SessionConfig;
-import org.seedstack.jcr.spi.JcrSessionFactory;
+import org.seedstack.jcr.JcrConfig.RepositoryConfig;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
-public abstract class BaseJcrSessionFactory implements JcrSessionFactory {
+public abstract class BaseJcrSessionFactory implements JcrRepositoryFactory {
 
     private static final ServiceLoader<RepositoryFactory> factories = ServiceLoader
             .load(RepositoryFactory.class);
 
     @Override
-    public Session createSession(SessionConfig configuration) throws RepositoryException {
+    public Session createSession(RepositoryConfig configuration) throws RepositoryException {
 
         Map<String, String> repositoryParameters = this.translateConfiguration(configuration);
         repositoryParameters = this.appendVendorProperties(configuration, repositoryParameters);
@@ -49,7 +49,7 @@ public abstract class BaseJcrSessionFactory implements JcrSessionFactory {
         return null;
     }
 
-    protected Map<String, String> appendVendorProperties(SessionConfig config,
+    protected Map<String, String> appendVendorProperties(RepositoryConfig config,
             Map<String, String> parsedConfig) {
 
         Map<String, String> transaltedConfig = new HashMap<>();

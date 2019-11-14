@@ -13,12 +13,12 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.seedstack.jcr.JcrConfig;
-import org.seedstack.jcr.JcrConfig.SessionConfig;
+import org.seedstack.jcr.JcrConfig.RepositoryConfig;
 
-public interface JcrSessionFactory {
+public interface JcrRepositoryFactory {
 
-    Session createSession(JcrConfig.SessionConfig configuration) throws RepositoryException;
+    Session createSession(JcrConfig.RepositoryConfig configuration) throws RepositoryException;
 
-    Map<String, String> translateConfiguration(SessionConfig config);
+    Map<String, String> translateConfiguration(RepositoryConfig config);
 
 }

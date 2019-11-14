@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.seedstack.jcr.JcrConfig;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
 import org.seedstack.seed.core.internal.jndi.JndiPlugin;
 import org.seedstack.seed.core.internal.transaction.TransactionPlugin;
@@ -24,11 +25,11 @@ import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 
-/** This plugin provides JCR support through JNDI or plain configuration. */
+/** This plug-in provides JCR support through JNDI or plain configuration. */
 public class JcrPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(JcrPlugin.class);
     private JcrConfig jcrConfig;
-    private final List<Class<?>> factories = new ArrayList<>();
+    private final List<Class<? extends JcrRepositoryFactory>> factories = new ArrayList<>();
 
     @Override
     public Collection<Class<?>> dependencies() {
@@ -40,16 +41,20 @@ public class JcrPlugin extends AbstractSeedPlugin {
         return "jcr";
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public InitState initialize(InitContext initContext) {
         jcrConfig = getConfiguration(JcrConfig.class);
 
-        factories.addAll(initContext.scannedTypesBySpecification()
-                .get(SessionFactorySpecification.INSTANCE));
+        initContext.scannedTypesBySpecification()
+                .get(RepositoryFactorySpecification.INSTANCE)
+                .stream()
+                .forEach((x) -> factories.add((Class<? extends JcrRepositoryFactory>) x));
+        ;
 
         LOGGER.info(
                 "Initializing JCR Plugin with {} factories and {} configurations",
-                factories.size(), jcrConfig.getSessions().size());
+                factories.size(), jcrConfig.getRepositories().size());
 
         return InitState.INITIALIZED;
     }
@@ -57,13 +62,12 @@ public class JcrPlugin extends AbstractSeedPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .specification(SessionFactorySpecification.INSTANCE)
+                .specification(RepositoryFactorySpecification.INSTANCE)
                 .build();
     }
 
     @Override
     public Object nativeUnitModule() {
-
         return new JcrModule(factories, jcrConfig);
     }
 
