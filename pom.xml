@@ -25,7 +25,7 @@
 
     <properties>
         <seed.version>3.9.0</seed.version>
-        <compatibility.version>4.0.0</compatibility.version>
+        <compatibility.skip>true</compatibility.skip>
         <bintray.package>jcr-addon</bintray.package>
 
         <javax.jcr.version>2.0</javax.jcr.version>
@@ -92,7 +92,6 @@
             </plugins>
         </pluginManagement>
     </build>
-
     <scm>
         <url>https://github.com/seedstack/jcr-addon</url>
         <connection>scm:git:git://github.com/seedstack/jcr-addon.git</connection>
@@ -110,7 +109,6 @@
             <url>http://dl.bintray.com/jfrog/jfrog-jars</url>
         </pluginRepository>
     </pluginRepositories>
-
     <profiles>
         <profile>
             <id>snapshots</id>
@@ -128,6 +126,7 @@
                 </repository>
             </repositories>
         </profile>
+        
         <profile>
             <id>bintray</id>
             <repositories>
@@ -145,5 +144,4 @@
             </repositories>
         </profile>
     </profiles>
-
 </project>
