@@ -23,10 +23,21 @@ import com.google.inject.Inject;
 public class SimpleDataRetrievalIT {
 
     @Inject
-    private Session defaultSession;
+    private Session alternativeSession;
 
     @Inject
-    private Session alternativeSession;
+    private Session defaultSession;
+
+    public void tearDown() throws Exception {
+
+        NodeIterator iterator = defaultSession.getRootNode().getNodes();
+        while (iterator.hasNext()) {
+            Node node = (Node) iterator.next();
+            node.remove();
+        }
+
+        defaultSession.save();
+    }
 
     @Test
     public void testInjection() throws Exception {
@@ -45,17 +56,6 @@ public class SimpleDataRetrievalIT {
         Assertions.assertThat(
                 defaultSession.getRootNode().getNode("test/").getProperty("prop").getString())
                 .isEqualTo("jcr-test");
-
-        defaultSession.save();
-    }
-
-    public void tearDown() throws Exception {
-
-        NodeIterator iterator = defaultSession.getRootNode().getNodes();
-        while (iterator.hasNext()) {
-            Node node = (Node) iterator.next();
-            node.remove();
-        }
 
         defaultSession.save();
     }

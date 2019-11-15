@@ -33,7 +33,7 @@ class JcrModule extends PrivateModule {
     JcrModule(List<Class<? extends JcrRepositoryFactory>> factories,
             JcrConfig jcrConfig) {
         this.factories = factories;
-        this.configuration = jcrConfig;
+        configuration = jcrConfig;
     }
 
     @Override

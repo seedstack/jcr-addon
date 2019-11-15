@@ -18,6 +18,7 @@ import org.seedstack.seed.transaction.spi.TransactionMetadata;
 public interface JcrExceptionHandler extends ExceptionHandler<Session> {
 
     @Override
-    boolean handleException(Exception exception, TransactionMetadata associatedTransactionMetadata, Session associatedTransaction);
+    boolean handleException(Exception exception, TransactionMetadata associatedTransactionMetadata,
+            Session associatedTransaction);
 
 }

@@ -19,5 +19,5 @@ import javax.inject.Qualifier;
 @Retention(RUNTIME)
 @Qualifier
 public @interface Jcr {
-  // Empty Interface
+    // Empty Interface
 }

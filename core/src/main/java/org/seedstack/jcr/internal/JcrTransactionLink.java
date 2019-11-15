@@ -22,7 +22,7 @@ class JcrTransactionLink implements TransactionalLink<Session> {
 
     @Override
     public Session get() {
-        Session session = this.perThreadObjectContainer.get().peek();
+        Session session = perThreadObjectContainer.get().peek();
 
         if (session == null) {
             throw SeedException
@@ -32,10 +32,6 @@ class JcrTransactionLink implements TransactionalLink<Session> {
         return session;
     }
 
-    void push(Session session) {
-        perThreadObjectContainer.get().push(session);
-    }
-
     Session pop() {
         Deque<Session> sessions = perThreadObjectContainer.get();
         Session session = sessions.pop();
@@ -43,6 +39,10 @@ class JcrTransactionLink implements TransactionalLink<Session> {
             perThreadObjectContainer.remove();
         }
         return session;
+    }
+
+    void push(Session session) {
+        perThreadObjectContainer.get().push(session);
     }
 
 }

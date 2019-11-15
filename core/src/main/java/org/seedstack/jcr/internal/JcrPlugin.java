@@ -28,17 +28,19 @@ import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
 /** This plug-in provides JCR support through JNDI or plain configuration. */
 public class JcrPlugin extends AbstractSeedPlugin {
     private static final Logger LOGGER = LoggerFactory.getLogger(JcrPlugin.class);
-    private JcrConfig jcrConfig;
     private final List<Class<? extends JcrRepositoryFactory>> factories = new ArrayList<>();
+    private JcrConfig jcrConfig;
+
+    @Override
+    public Collection<ClasspathScanRequest> classpathScanRequests() {
+        return classpathScanRequestBuilder()
+                .specification(RepositoryFactorySpecification.INSTANCE)
+                .build();
+    }
 
     @Override
     public Collection<Class<?>> dependencies() {
         return Lists.newArrayList(JndiPlugin.class, TransactionPlugin.class);
-    }
-
-    @Override
-    public String name() {
-        return "jcr";
     }
 
     @SuppressWarnings("unchecked")
@@ -60,10 +62,8 @@ public class JcrPlugin extends AbstractSeedPlugin {
     }
 
     @Override
-    public Collection<ClasspathScanRequest> classpathScanRequests() {
-        return classpathScanRequestBuilder()
-                .specification(RepositoryFactorySpecification.INSTANCE)
-                .build();
+    public String name() {
+        return "jcr";
     }
 
     @Override

@@ -40,11 +40,11 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
         this.configuration = configuration;
 
         if (configuration.getRepositoryFactory() != null) {
-            this.initializeFactoryInstances(
+            initializeFactoryInstances(
                     factories.stream().filter(x -> x.equals(configuration.getRepositoryFactory()))
                             .collect(Collectors.toList()));
         } else {
-            this.initializeFactoryInstances(factories);
+            initializeFactoryInstances(factories);
         }
     }
 
@@ -59,7 +59,7 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
 
     @Override
     public void doCleanup() {
-        this.transactionalLink.pop().logout();
+        transactionalLink.pop().logout();
     }
 
     @Override
@@ -73,7 +73,7 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
 
     @Override
     public Session doCreateTransaction() {
-        return this.transactionalLink.get();
+        return transactionalLink.get();
     }
 
     @Override
@@ -82,7 +82,7 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
             try {
                 Session session = factory.createSession(configuration);
                 if (session != null) {
-                    this.transactionalLink.push(session);
+                    transactionalLink.push(session);
                     return;
                 }
             } catch (RepositoryException e) {

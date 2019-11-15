@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /**
- * 
+ *
  */
 package org.seedstack.jcr.implementations;
 
@@ -20,9 +20,9 @@ import org.seedstack.jcr.JcrConfig.RepositoryConfig;
 
 @Priority(100)
 public class JackrabbitFactory extends BaseJcrSessionFactory {
+    private static final String JNDI_NAME = "org.apache.jackrabbit.repository.jndi.name";
     private static final String REPOSITORY_HOME = "org.apache.jackrabbit.repository.home";
     private static final String REPOSITORY_URI = "org.apache.jackrabbit.repository.uri";
-    private static final String JNDI_NAME = "org.apache.jackrabbit.repository.jndi.name";
 
     @Override
     public Map<String, String> translateConfiguration(RepositoryConfig config) {

@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /**
- * 
+ *
  */
 package org.seedstack.jcr;
 
@@ -32,8 +32,8 @@ public abstract class BaseJcrSessionFactory implements JcrRepositoryFactory {
     @Override
     public Session createSession(RepositoryConfig configuration) throws RepositoryException {
 
-        Map<String, String> repositoryParameters = this.translateConfiguration(configuration);
-        repositoryParameters = this.appendVendorProperties(configuration, repositoryParameters);
+        Map<String, String> repositoryParameters = translateConfiguration(configuration);
+        repositoryParameters = appendVendorProperties(configuration, repositoryParameters);
 
         // Loop over every factory impl and look for one that accepts our parameters
         for (RepositoryFactory factory : factories) {

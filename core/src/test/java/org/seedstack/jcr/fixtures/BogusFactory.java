@@ -6,7 +6,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
 /**
- * 
+ *
  */
 package org.seedstack.jcr.fixtures;
 
@@ -25,14 +25,6 @@ public class BogusFactory implements JcrRepositoryFactory {
 
     private static int callCount = 0;
 
-    public static void resetCallCount() {
-        callCount = 0;
-    }
-
-    public static int getCallCount() {
-        return callCount;
-    }
-
     @Override
     public synchronized Session createSession(RepositoryConfig configuration)
             throws RepositoryException {
@@ -43,6 +35,14 @@ public class BogusFactory implements JcrRepositoryFactory {
     @Override
     public Map<String, String> translateConfiguration(RepositoryConfig config) {
         return Collections.emptyMap();
+    }
+
+    public static int getCallCount() {
+        return callCount;
+    }
+
+    public static void resetCallCount() {
+        callCount = 0;
     }
 
 }
