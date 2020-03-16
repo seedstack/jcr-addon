@@ -20,7 +20,7 @@ import javax.jcr.Session;
 import org.seedstack.jcr.JcrConfig.RepositoryConfig;
 import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
-@Priority(1000)
+@Priority(10)
 public class BogusFactory implements JcrRepositoryFactory {
 
     private static int callCount = 0;

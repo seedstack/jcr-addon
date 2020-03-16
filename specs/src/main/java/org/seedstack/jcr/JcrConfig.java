@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
-import org.seedstack.jcr.spi.JcrExceptionHandler;
 import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
 @Config("jcr")
@@ -28,11 +27,6 @@ public class JcrConfig {
 
     private Map<String, RepositoryConfig> repositories = new HashMap<>();
 
-    public JcrConfig addRepository(String key, RepositoryConfig repositoryConfig) {
-        repositories.put(key, repositoryConfig);
-        return this;
-    }
-
     public String getDefaultRepository() {
         return defaultRepository;
     }
@@ -41,14 +35,13 @@ public class JcrConfig {
         return Collections.unmodifiableMap(repositories);
     }
 
-    public void setDefaultsession(String defaultRepository) {
+    public void setDefaultRepository(String defaultRepository) {
         this.defaultRepository = defaultRepository;
     }
 
     @Override
     public String toString() {
-        return "JcrConfig [defaultRepository=" + defaultRepository + ", repositories="
-                + repositories + "]";
+        return "JcrConfig [defaultRepository=" + defaultRepository + ", repositories=" + repositories + "]";
     }
 
     public enum RepositoryAddressType {
@@ -59,7 +52,6 @@ public class JcrConfig {
 
         @NotNull
         private String address;
-        private Class<? extends JcrExceptionHandler> exceptionHandler;
 
         private String password;
         private Class<? extends JcrRepositoryFactory> repositoryFactory;
@@ -73,10 +65,6 @@ public class JcrConfig {
 
         public String getAddress() {
             return address;
-        }
-
-        public Class<? extends JcrExceptionHandler> getExceptionHandler() {
-            return exceptionHandler;
         }
 
         public String getPassword() {
@@ -108,19 +96,12 @@ public class JcrConfig {
             return this;
         }
 
-        public RepositoryConfig setExceptionHandler(
-                Class<? extends JcrExceptionHandler> exceptionHandler) {
-            this.exceptionHandler = exceptionHandler;
-            return this;
-        }
-
         public RepositoryConfig setPassword(String password) {
             this.password = password;
             return this;
         }
 
-        public RepositoryConfig setRepositoryFactory(
-                Class<? extends JcrRepositoryFactory> repositoryFactory) {
+        public RepositoryConfig setRepositoryFactory(Class<? extends JcrRepositoryFactory> repositoryFactory) {
             this.repositoryFactory = repositoryFactory;
             return this;
         }
@@ -143,10 +124,8 @@ public class JcrConfig {
 
         @Override
         public String toString() {
-            return "RepositoryConfig [address=" + address + ", exceptionHandler=" + exceptionHandler
-                    + ", password=" + password + ", repositoryFactory=" + repositoryFactory
-                    + ", type=" + type + ", username=" + username + ", vendorProperties="
-                    + vendorProperties + "]";
+            return "RepositoryConfig [address=" + address + ", repositoryFactory=" + repositoryFactory + ", type="
+                    + type + ", username=" + username + ", vendorProperties=" + vendorProperties + "]";
         }
     }
 }

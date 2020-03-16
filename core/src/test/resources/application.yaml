@@ -19,8 +19,12 @@ jcr:
       address: ./target/test/repositories/jcr1
       username: admin
       password: admin
+    anonymous:
+        type: LOCAL_PATH
+        address: ./target/test/repositories/jcrAnnon 
     alternative:
       type: LOCAL_PATH
+      repositoryFactory: org.seedstack.jcr.fixtures.BogusFactory
       address: ./target/test/repositories/jcr2
       vendorProperties:
         prop1: value

@@ -8,11 +8,7 @@
 package org.seedstack.jcr;
 
 import javax.jcr.Node;
-import javax.jcr.NodeIterator;
 import javax.jcr.Session;
-import javax.transaction.Transactional;
-
-import com.google.inject.Inject;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -20,6 +16,8 @@ import org.junit.runner.RunWith;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.slf4j.Logger;
+
+import com.google.inject.Inject;
 
 @RunWith(SeedITRunner.class)
 public class SimpleDataRetrievalIT {
@@ -40,20 +38,19 @@ public class SimpleDataRetrievalIT {
     }
 
     @Test
-    @Transactional
     public void testNodeModification() throws Exception {
         Node newNode = defaultSession.getRootNode().addNode("test");
         Assertions.assertThat(newNode).isNotNull();
+        defaultSession.save();
         newNode.setProperty("prop", "jcr-test");
         Assertions.assertThat(defaultSession.getRootNode().getNode("test/").getProperty("prop").getString())
                 .isEqualTo("jcr-test");
 
-        logger.info("getnodes {}", defaultSession.getRootNode().getNodes());
+        defaultSession.save();
+        logger.info("getNodes {}", defaultSession.getRootNode().getNodes());
 
-        NodeIterator iterator = defaultSession.getRootNode().getNodes();
-        while (iterator.hasNext()) {
-            logger.info("Removing node {}", iterator.nextNode());
-            // iterator.nextNode().remove();
-        }
+        defaultSession.getRootNode().getNode("test/").remove();
+        defaultSession.save();
+
     }
 }

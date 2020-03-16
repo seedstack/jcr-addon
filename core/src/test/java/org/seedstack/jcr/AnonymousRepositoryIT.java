@@ -19,15 +19,15 @@ import org.seedstack.jcr.fixtures.BogusJUnitRunner;
 import com.google.inject.Inject;
 
 @RunWith(BogusJUnitRunner.class)
-public class BogusFactoryIT {
+public class AnonymousRepositoryIT {
 
     @Inject
-    @Named("alternative")
-    private Session alternativeSession;
+    @Named("anonymous")
+    private Session anonymousRepository;
 
     @Test
     public void testFailure() throws Exception {
-        Assertions.assertThat(BogusFactory.getCallCount()).isEqualTo(1);
+        Assertions.assertThat(anonymousRepository).isNotNull();
 
     }
 
