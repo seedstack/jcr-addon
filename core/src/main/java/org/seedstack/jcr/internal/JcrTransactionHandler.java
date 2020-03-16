@@ -40,9 +40,8 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
         this.configuration = configuration;
 
         if (configuration.getRepositoryFactory() != null) {
-            initializeFactoryInstances(
-                    factories.stream().filter(x -> x.equals(configuration.getRepositoryFactory()))
-                            .collect(Collectors.toList()));
+            initializeFactoryInstances(factories.stream().filter(x -> x.equals(configuration.getRepositoryFactory()))
+                    .collect(Collectors.toList()));
         } else {
             initializeFactoryInstances(factories);
         }
@@ -86,8 +85,7 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
                     return;
                 }
             } catch (RepositoryException e) {
-                LOGGER.debug("Could not acquire a session for {} with {} due {}", configuration,
-                        factory, e);
+                LOGGER.debug("Could not acquire a session for {} with {} due {}", configuration, factory, e);
             }
         }
         throw SeedException.createNew(JcrErrorCode.CANNOT_CREATE_SESSION).put("config",
@@ -126,10 +124,9 @@ public class JcrTransactionHandler implements TransactionHandler<Session> {
     private void initializeFactoryInstances(List<Class<? extends JcrRepositoryFactory>> factories) {
         for (Class<? extends JcrRepositoryFactory> factoryClass : factories) {
             try {
-                factoryInstances.add(factoryClass.newInstance());
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw SeedException.wrap(e, JcrErrorCode.CANNOT_CREATE_FACTORY)
-                        .put("factoryClass", factoryClass);
+                factoryInstances.add(factoryClass.getDeclaredConstructor().newInstance());
+            } catch (Exception ex) {
+                throw SeedException.wrap(ex, JcrErrorCode.CANNOT_CREATE_FACTORY).put("factoryClass", factoryClass);
             }
         }
     }

@@ -33,7 +33,6 @@ public class BogusFactoryIT {
     }
 
     @Test
-    @Jcr
     @Transactional
     public void testFailure() throws Exception {
         Assertions.assertThat(BogusFactory.getCallCount()).isEqualTo(1);

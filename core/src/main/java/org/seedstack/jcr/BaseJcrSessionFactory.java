@@ -35,7 +35,7 @@ public abstract class BaseJcrSessionFactory implements JcrRepositoryFactory {
         Map<String, String> repositoryParameters = translateConfiguration(configuration);
         repositoryParameters = appendVendorProperties(configuration, repositoryParameters);
 
-        // Loop over every factory impl and look for one that accepts our parameters
+        // Loop over every factory implementation and look for one that accepts our parameters
         for (RepositoryFactory factory : factories) {
             Repository repo = factory.getRepository(repositoryParameters);
             if (repo != null) {
