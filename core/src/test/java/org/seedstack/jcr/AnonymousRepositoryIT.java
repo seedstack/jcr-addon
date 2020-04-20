@@ -7,18 +7,17 @@
  */
 package org.seedstack.jcr;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jcr.Session;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.jcr.fixtures.BogusFactory;
-import org.seedstack.jcr.fixtures.BogusJUnitRunner;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
-import com.google.inject.Inject;
 
-@RunWith(BogusJUnitRunner.class)
+@RunWith(SeedITRunner.class)
 public class AnonymousRepositoryIT {
 
     @Inject
@@ -26,8 +25,10 @@ public class AnonymousRepositoryIT {
     private Session anonymousRepository;
 
     @Test
-    public void testFailure() throws Exception {
+    @WithContentRepository
+    public void testAnonymousRepository() throws Exception {
         Assertions.assertThat(anonymousRepository).isNotNull();
+        Assertions.assertThat(anonymousRepository.isLive()).isTrue();
 
     }
 

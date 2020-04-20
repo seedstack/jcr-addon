@@ -13,4 +13,5 @@ import java.lang.annotation.RetentionPolicy;
 @JcrConcern
 @Retention(RetentionPolicy.RUNTIME)
 @interface JcrConcern {
+    // Annotation
 }
