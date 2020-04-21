@@ -11,10 +11,13 @@
 package org.seedstack.jcr.internal;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import javax.jcr.Session;
+
+import org.seedstack.seed.SeedException;
 
 class JcrSessionProxy implements InvocationHandler {
 
@@ -30,10 +33,16 @@ class JcrSessionProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         Session instance = sessionLink.getThreadSession(configName);
         if (instance == null) {
-            throw new RuntimeException("Session is not provided");
+            throw SeedException.createNew(JcrErrorCode.CANNOT_PROVIDE_SESSION).put("config",
+                    configName);
         }
-
-        return method.invoke(instance, args);
+        try {
+            return method.invoke(instance, args);
+        } catch (InvocationTargetException ex) {
+            // Something went wrong during the execution
+            // Time to unwrap the cause
+            throw ex.getCause();
+        }
     }
 
     static Session getProxyInstance(String configName, JcrSessionLink sessionLink) {

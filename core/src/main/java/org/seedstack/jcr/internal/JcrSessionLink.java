@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
+import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,8 @@ class JcrSessionLink {
                 return;
             }
             if (!providers.containsKey(sessionKey)) {
-                throw new RuntimeException("Session provider not found");
+                throw SeedException.createNew(JcrErrorCode.CANNOT_LOCATE_PROVIDER).put("sessionKey",
+                        sessionKey);
             }
             sessionMap.put(sessionKey, providers.get(sessionKey).get());
         } finally {
@@ -66,15 +68,15 @@ class JcrSessionLink {
             }
             Session session = sessionMap.get(sessionKey);
             if (!session.isLive()) {
-                throw new RuntimeException("Session is already disposed");
+
+                throw SeedException.createNew(JcrErrorCode.SESSION_ALREADY_DISPOSED);
             }
             session.save();
             session.logout();
         } catch (RepositoryException e) {
             sessionMap.remove(sessionKey);
-            throw new RuntimeException("Session disposal failed", e);
+            throw SeedException.wrap(e, JcrErrorCode.SESSION_DISPOSAL_FAILED);
         } finally {
-
             if (hits > 1) {
                 hitMap.put(sessionKey, hits - 1);
             } else {

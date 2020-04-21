@@ -57,7 +57,7 @@ class JcrSessionProvider implements Provider<Session> {
                     return session;
                 }
             } catch (RepositoryException e) {
-                LOGGER.info("Could not acquire a session for {} with {} due {}", configuration,
+                LOGGER.debug("Could not acquire a session for {} with {} due {}", configuration,
                         factory, e);
             }
         }
