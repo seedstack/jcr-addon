@@ -20,11 +20,9 @@ import org.slf4j.Logger;
 import com.google.inject.Inject;
 
 @RunWith(SeedITRunner.class)
+
+@WithContentRepository
 public class SimpleDataRetrievalIT {
-
-    @Inject
-    private Session alternativeSession;
-
     @Inject
     private Session defaultSession;
 
@@ -34,16 +32,19 @@ public class SimpleDataRetrievalIT {
     @Test
     public void testInjection() throws Exception {
         Assertions.assertThat(defaultSession).isNotNull();
-        Assertions.assertThat(alternativeSession).isNotNull();
     }
 
+    
+    
     @Test
     public void testNodeModification() throws Exception {
         Node newNode = defaultSession.getRootNode().addNode("test");
         Assertions.assertThat(newNode).isNotNull();
         defaultSession.save();
         newNode.setProperty("prop", "jcr-test");
-        Assertions.assertThat(defaultSession.getRootNode().getNode("test/").getProperty("prop").getString())
+        Assertions
+                .assertThat(defaultSession.getRootNode().getNode("test/").getProperty("prop")
+                        .getString())
                 .isEqualTo("jcr-test");
 
         defaultSession.save();

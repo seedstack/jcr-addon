@@ -14,22 +14,27 @@ import javax.jcr.Session;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.seedstack.jcr.fixtures.TestConstructorFixture;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 
-
 @RunWith(SeedITRunner.class)
-public class AnonymousRepositoryIT {
+@WithContentRepository
+public class TestInterceptorIT {
+
+    @Inject
+    TestConstructorFixture testService;
+
+    @Inject
+    private Session defaultSession;
 
     @Inject
     @Named("anonymous")
-    private Session anonymousRepository;
+    private Session anonSession;
 
     @Test
-    @WithContentRepository
-    public void testAnonymousRepository() throws Exception {
-        Assertions.assertThat(anonymousRepository).isNotNull();
-        Assertions.assertThat(anonymousRepository.isLive()).isTrue();
-
+    public void testInjector() throws Exception {
+        Assertions.assertThat(defaultSession.getRootNode()).isNotNull();
+        testService.testSession();
     }
 
 }

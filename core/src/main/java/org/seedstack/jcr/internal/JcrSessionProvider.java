@@ -23,16 +23,21 @@ import org.slf4j.LoggerFactory;
 
 class JcrSessionProvider implements Provider<Session> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JcrSessionProvider.class);
+    private final String configName;
+
     private final RepositoryConfig configuration;
     private final List<JcrRepositoryFactory> factoryInstances;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JcrSessionProvider.class);
+    JcrSessionProvider(String configName, RepositoryConfig configuration,
+            List<JcrRepositoryFactory> factoryInstances) {
 
-    JcrSessionProvider(RepositoryConfig configuration, List<JcrRepositoryFactory> factoryInstances) {
+        this.configName = configName;
         this.configuration = configuration;
         if (configuration.getRepositoryFactory() != null) {
             this.factoryInstances = factoryInstances.stream()
-                    .filter(x -> configuration.getRepositoryFactory().isAssignableFrom(x.getClass()))
+                    .filter(x -> configuration.getRepositoryFactory()
+                            .isAssignableFrom(x.getClass()))
                     .collect(Collectors.toList());
         } else {
             this.factoryInstances = Collections.unmodifiableList(factoryInstances);
@@ -44,7 +49,7 @@ class JcrSessionProvider implements Provider<Session> {
     @Override
     public Session get() {
 
-        LOGGER.trace("Getting instance for {}", configuration.getAddress());
+        LOGGER.trace("Providing instance for {}", configuration.getAddress());
         for (JcrRepositoryFactory factory : factoryInstances) {
             try {
                 Session session = factory.createSession(configuration);
@@ -52,10 +57,16 @@ class JcrSessionProvider implements Provider<Session> {
                     return session;
                 }
             } catch (RepositoryException e) {
-                LOGGER.debug("Could not acquire a session for {} with {} due {}", configuration, factory, e);
+                LOGGER.debug("Could not acquire a session for {} with {} due {}", configuration,
+                        factory, e);
             }
         }
-        throw SeedException.createNew(JcrErrorCode.CANNOT_CREATE_SESSION).put("address", configuration.getAddress());
+        throw SeedException.createNew(JcrErrorCode.CANNOT_CREATE_SESSION).put("address",
+                configuration.getAddress());
+    }
+
+    public String getConfigurationName() {
+        return configName;
     }
 
 }

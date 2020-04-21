@@ -7,14 +7,18 @@
  */
 package org.seedstack.jcr.fixtures;
 
-import javax.jcr.RepositoryException;
+import org.seedstack.seed.Install;
 
-public class BoggusException extends RepositoryException {
+import com.google.inject.AbstractModule;
 
-    private static final long serialVersionUID = 7777583121965700L;
+@Install
+public class FixtureModule extends AbstractModule {
 
-    public BoggusException() {
-        super();
+    @Override
+    protected void configure() {
+        super.configure();
+        bind(TestConstructorFixture.class).to(TestConstructorFixtureImpl.class).asEagerSingleton();
+
     }
 
 }

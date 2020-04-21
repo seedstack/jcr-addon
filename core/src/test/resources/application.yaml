@@ -9,7 +9,8 @@
 logging: 
   level: INFO
   loggers:
-    org.seedstack.jcr: TRACE
+    org.seedstack.jcr: INFO
+    org.apache: WARN
     
 jcr:
   defaultRepository: repo1

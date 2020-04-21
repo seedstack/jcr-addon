@@ -29,7 +29,7 @@ public class BogusFactory implements JcrRepositoryFactory {
     public synchronized Session createSession(RepositoryConfig configuration)
             throws RepositoryException {
         callCount += 1;
-        throw new BoggusException();
+        throw new BogusException();
     }
 
     @Override

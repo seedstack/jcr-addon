@@ -7,28 +7,30 @@
  */
 package org.seedstack.jcr;
 
+import static org.junit.Assert.fail;
+
 import javax.inject.Named;
 import javax.jcr.Session;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.seedstack.jcr.fixtures.BogusFactory;
-import org.seedstack.jcr.fixtures.BogusJUnitRunner;
+import org.seedstack.jcr.fixtures.BogusException;
+import org.seedstack.seed.testing.junit4.SeedITRunner;
 
 import com.google.inject.Inject;
 
-@RunWith(BogusJUnitRunner.class)
+@RunWith(SeedITRunner.class)
 public class BogusFactoryIT {
 
     @Inject
     @Named("alternative")
     private Session alternativeSession;
 
-    @Test
+    @Test(expected = BogusException.class)
+    @WithContentRepository
     public void testFailure() throws Exception {
-        Assertions.assertThat(BogusFactory.getCallCount()).isEqualTo(1);
-
+        // This method should fail
+        fail("Bogus returned an insance!");
     }
 
 }

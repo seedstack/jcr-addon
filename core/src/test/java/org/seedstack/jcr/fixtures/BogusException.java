@@ -5,13 +5,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-package org.seedstack.jcr.internal;
+package org.seedstack.jcr.fixtures;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
+public class BogusException extends RuntimeException {
 
-@JcrConcern
-@Retention(RetentionPolicy.RUNTIME)
-@interface JcrConcern {
-    // Annotation
+    private static final long serialVersionUID = 7777583121965700L;
+
+    public BogusException() {
+        super();
+    }
+
 }
