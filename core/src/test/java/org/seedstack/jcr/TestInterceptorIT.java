@@ -9,6 +9,7 @@ package org.seedstack.jcr;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.assertj.core.api.Assertions;
@@ -20,6 +21,8 @@ import org.seedstack.seed.testing.junit4.SeedITRunner;
 @RunWith(SeedITRunner.class)
 @WithContentRepository
 public class TestInterceptorIT {
+
+    private static final String nodeMock = "Mock";
 
     @Inject
     TestConstructorFixture testService;
@@ -36,5 +39,10 @@ public class TestInterceptorIT {
         Assertions.assertThat(defaultSession.getRootNode()).isNotNull();
         testService.testSession();
     }
+
+    @Test(expected = RepositoryException.class)
+    public void testInvokationError() throws Exception {
+        Assertions.assertThat(defaultSession.getNode(nodeMock)).isNotNull();      
+    } 
 
 }

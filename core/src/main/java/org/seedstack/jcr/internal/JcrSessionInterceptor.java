@@ -45,9 +45,11 @@ public class JcrSessionInterceptor implements MethodInterceptor {
         Set<String> sessions = getRequiredSessions(invocation);
 
         sessions.forEach(sessionLink::createSession);
-        Object returnValue = invocation.proceed();
-        sessions.forEach(sessionLink::finishSession);
-        return returnValue;
+        try {
+          return invocation.proceed();
+        } finally {
+          sessions.forEach(sessionLink::finishSession);
+        }
     }
 
     private Set<String> getRequiredSessions(MethodInvocation invocation) {
