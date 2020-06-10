@@ -1,23 +1,22 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
+
 package org.seedstack.jcr;
 
+import com.google.inject.Inject;
 import javax.jcr.Node;
 import javax.jcr.Session;
-
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.seedstack.seed.Logging;
 import org.seedstack.seed.testing.junit4.SeedITRunner;
 import org.slf4j.Logger;
-
-import com.google.inject.Inject;
 
 @RunWith(SeedITRunner.class)
 
@@ -34,8 +33,6 @@ public class SimpleDataRetrievalIT {
         Assertions.assertThat(defaultSession).isNotNull();
     }
 
-    
-    
     @Test
     public void testNodeModification() throws Exception {
         Node newNode = defaultSession.getRootNode().addNode("test");

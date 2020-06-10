@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -12,9 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-
 import javax.validation.constraints.NotNull;
-
 import org.apache.commons.lang.StringUtils;
 import org.seedstack.coffig.Config;
 import org.seedstack.coffig.SingleValue;
@@ -31,12 +29,12 @@ public class JcrConfig {
         return defaultRepository;
     }
 
-    public Map<String, RepositoryConfig> getRepositories() {
-        return Collections.unmodifiableMap(repositories);
-    }
-
     public void setDefaultRepository(String defaultRepository) {
         this.defaultRepository = defaultRepository;
+    }
+
+    public Map<String, RepositoryConfig> getRepositories() {
+        return Collections.unmodifiableMap(repositories);
     }
 
     @Override
@@ -67,33 +65,13 @@ public class JcrConfig {
             return address;
         }
 
-        public String getPassword() {
-            return password;
-        }
-
-        public Class<? extends JcrRepositoryFactory> getRepositoryFactory() {
-            return repositoryFactory;
-        }
-
-        public RepositoryAddressType getType() {
-            return type;
-        }
-
-        public String getUsername() {
-            return username;
-        }
-
-        public Properties getVendorProperties() {
-            return vendorProperties;
-        }
-
-        public boolean hasAuthenticationInfo() {
-            return !(StringUtils.isBlank(username) || StringUtils.isBlank(password));
-        }
-
         public RepositoryConfig setAddress(String address) {
             this.address = address;
             return this;
+        }
+
+        public String getPassword() {
+            return password;
         }
 
         public RepositoryConfig setPassword(String password) {
@@ -101,9 +79,17 @@ public class JcrConfig {
             return this;
         }
 
+        public Class<? extends JcrRepositoryFactory> getRepositoryFactory() {
+            return repositoryFactory;
+        }
+
         public RepositoryConfig setRepositoryFactory(Class<? extends JcrRepositoryFactory> repositoryFactory) {
             this.repositoryFactory = repositoryFactory;
             return this;
+        }
+
+        public RepositoryAddressType getType() {
+            return type;
         }
 
         public RepositoryConfig setType(RepositoryAddressType type) {
@@ -111,15 +97,27 @@ public class JcrConfig {
             return this;
         }
 
+        public String getUsername() {
+            return username;
+        }
+
         public RepositoryConfig setUsername(String username) {
             this.username = username;
             return this;
+        }
+
+        public Properties getVendorProperties() {
+            return vendorProperties;
         }
 
         public RepositoryConfig setVendorProperties(Properties vendorProperties) {
             this.vendorProperties = vendorProperties;
             return this;
 
+        }
+
+        public boolean hasAuthenticationInfo() {
+            return !(StringUtils.isBlank(username) || StringUtils.isBlank(password));
         }
 
         @Override

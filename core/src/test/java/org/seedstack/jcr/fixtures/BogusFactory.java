@@ -1,5 +1,5 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -8,15 +8,14 @@
 /**
  *
  */
+
 package org.seedstack.jcr.fixtures;
 
 import java.util.Collections;
 import java.util.Map;
-
 import javax.annotation.Priority;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
 import org.seedstack.jcr.JcrConfig.RepositoryConfig;
 import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
@@ -24,6 +23,14 @@ import org.seedstack.jcr.spi.JcrRepositoryFactory;
 public class BogusFactory implements JcrRepositoryFactory {
 
     private static int callCount = 0;
+
+    public static int getCallCount() {
+        return callCount;
+    }
+
+    public static void resetCallCount() {
+        callCount = 0;
+    }
 
     @Override
     public synchronized Session createSession(RepositoryConfig configuration)
@@ -35,14 +42,6 @@ public class BogusFactory implements JcrRepositoryFactory {
     @Override
     public Map<String, String> translateConfiguration(RepositoryConfig config) {
         return Collections.emptyMap();
-    }
-
-    public static int getCallCount() {
-        return callCount;
-    }
-
-    public static void resetCallCount() {
-        callCount = 0;
     }
 
 }

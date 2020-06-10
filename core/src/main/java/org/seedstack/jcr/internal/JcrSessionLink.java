@@ -1,32 +1,25 @@
 /*
- * Copyright © 2013-2019, The SeedStack authors <http://seedstack.org>
+ * Copyright © 2013-2020, The SeedStack authors <http://seedstack.org>
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/**
- * 
- */
+
 package org.seedstack.jcr.internal;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-
 import org.seedstack.seed.SeedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 class JcrSessionLink {
-
     private final Logger LOGGER = LoggerFactory.getLogger(JcrSessionLink.class);
-    private final ThreadLocal<Map<String, Session>> perThreadSessionMap = ThreadLocal
-            .withInitial(HashMap::new);
-    private final ThreadLocal<Map<String, Integer>> perThreadHitMap = ThreadLocal
-            .withInitial(HashMap::new);
+    private final ThreadLocal<Map<String, Session>> perThreadSessionMap = ThreadLocal.withInitial(HashMap::new);
+    private final ThreadLocal<Map<String, Integer>> perThreadHitMap = ThreadLocal.withInitial(HashMap::new);
 
     private final Map<String, JcrSessionProvider> providers = new HashMap<>();
 
@@ -43,8 +36,7 @@ class JcrSessionLink {
                 return;
             }
             if (!providers.containsKey(sessionKey)) {
-                throw SeedException.createNew(JcrErrorCode.CANNOT_LOCATE_PROVIDER).put("sessionKey",
-                        sessionKey);
+                throw SeedException.createNew(JcrErrorCode.CANNOT_LOCATE_PROVIDER).put("sessionKey", sessionKey);
             }
             sessionMap.put(sessionKey, providers.get(sessionKey).get());
         } finally {
