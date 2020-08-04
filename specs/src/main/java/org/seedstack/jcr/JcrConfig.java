@@ -8,15 +8,15 @@
 
 package org.seedstack.jcr;
 
+import org.seedstack.coffig.Config;
+import org.seedstack.coffig.SingleValue;
+import org.seedstack.jcr.spi.JcrRepositoryFactory;
+
+import javax.validation.constraints.NotNull;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import javax.validation.constraints.NotNull;
-import org.apache.commons.lang.StringUtils;
-import org.seedstack.coffig.Config;
-import org.seedstack.coffig.SingleValue;
-import org.seedstack.jcr.spi.JcrRepositoryFactory;
 
 @Config("jcr")
 public class JcrConfig {
@@ -117,13 +117,17 @@ public class JcrConfig {
         }
 
         public boolean hasAuthenticationInfo() {
-            return !(StringUtils.isBlank(username) || StringUtils.isBlank(password));
+            return !(isBlank(username) || isBlank(password));
         }
 
         @Override
         public String toString() {
             return "RepositoryConfig [address=" + address + ", repositoryFactory=" + repositoryFactory + ", type="
                     + type + ", username=" + username + ", vendorProperties=" + vendorProperties + "]";
+        }
+
+        private boolean isBlank(String val) {
+            return val == null || val.isEmpty();
         }
     }
 }

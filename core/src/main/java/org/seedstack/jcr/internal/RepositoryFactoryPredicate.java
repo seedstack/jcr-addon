@@ -8,20 +8,21 @@
 
 package org.seedstack.jcr.internal;
 
-import java.lang.reflect.Modifier;
-import org.kametic.specifications.AbstractSpecification;
 import org.seedstack.jcr.spi.JcrRepositoryFactory;
 import org.seedstack.shed.reflect.ClassPredicates;
 
-public class RepositoryFactorySpecification extends AbstractSpecification<Class<?>> {
-    public static final RepositoryFactorySpecification INSTANCE = new RepositoryFactorySpecification();
+import java.lang.reflect.Modifier;
+import java.util.function.Predicate;
 
-    private RepositoryFactorySpecification() {
+public class RepositoryFactoryPredicate implements Predicate<Class<?>> {
+    public static final RepositoryFactoryPredicate INSTANCE = new RepositoryFactoryPredicate();
+
+    private RepositoryFactoryPredicate() {
         // cannot be instantiated
     }
 
     @Override
-    public boolean isSatisfiedBy(Class<?> candidate) {
+    public boolean test(Class<?> candidate) {
         return ClassPredicates
                 .classModifierIs(Modifier.ABSTRACT).negate()
                 .and(ClassPredicates.classImplements(JcrRepositoryFactory.class))

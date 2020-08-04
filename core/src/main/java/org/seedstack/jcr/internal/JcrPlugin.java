@@ -12,9 +12,6 @@ import com.google.common.collect.Lists;
 import io.nuun.kernel.api.plugin.InitState;
 import io.nuun.kernel.api.plugin.context.InitContext;
 import io.nuun.kernel.api.plugin.request.ClasspathScanRequest;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 import org.seedstack.jcr.JcrConfig;
 import org.seedstack.jcr.spi.JcrRepositoryFactory;
 import org.seedstack.seed.core.internal.AbstractSeedPlugin;
@@ -22,6 +19,10 @@ import org.seedstack.seed.core.internal.jndi.JndiPlugin;
 import org.seedstack.seed.core.internal.transaction.TransactionPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This plug-in provides JCR support through JNDI or plain configuration.
@@ -34,7 +35,7 @@ public class JcrPlugin extends AbstractSeedPlugin {
     @Override
     public Collection<ClasspathScanRequest> classpathScanRequests() {
         return classpathScanRequestBuilder()
-                .specification(RepositoryFactorySpecification.INSTANCE)
+                .predicate(RepositoryFactoryPredicate.INSTANCE)
                 .build();
     }
 
@@ -48,9 +49,8 @@ public class JcrPlugin extends AbstractSeedPlugin {
     public InitState initialize(InitContext initContext) {
         jcrConfig = getConfiguration(JcrConfig.class);
 
-        initContext.scannedTypesBySpecification()
-                .get(RepositoryFactorySpecification.INSTANCE)
-                .stream()
+        initContext.scannedTypesByPredicate()
+                .get(RepositoryFactoryPredicate.INSTANCE)
                 .forEach((x) -> factories.add((Class<? extends JcrRepositoryFactory>) x));
         ;
 
