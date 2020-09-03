@@ -14,6 +14,7 @@ menu:
     JCR:
         parent: "contents"
         weight: 10
+noMenu: true    
 ---
 
 SeedStack JCR add-on supports any JCR-compliant [Repository Content](https://en.wikipedia.org/wiki/Content_repository_API_for_Java) to allow
